@@ -6,9 +6,12 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,6 +21,13 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User {
+
+    public User() {
+    }
+
+    public User(Long id) {
+        this.id = id;
+    }
 
     public User(String first_name, String last_name, String email, String gender, LocalDateTime created_at) {
         this.first_name = first_name;
@@ -51,7 +61,8 @@ public class User {
     @Column(nullable = true)
     private LocalDateTime updated_at;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @JsonIgnore
     private List<Transaction> transactions;
 
     public Long getId() {
