@@ -1,6 +1,7 @@
 package com.nm.personal.financetracker.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,10 +30,15 @@ public class User {
         this.id = id;
     }
 
-    public User(String first_name, String last_name, String email, String gender, LocalDateTime created_at) {
+    public User(String first_name, String last_name, String email, String username, String password, String role,
+            String gender,
+            LocalDateTime created_at) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = role;
         this.gender = gender;
         this.created_at = created_at;
     }
@@ -50,6 +56,15 @@ public class User {
     @Column(length = 150, unique = true, nullable = false)
     private String email;
 
+    @Column(length = 150, unique = true, nullable = false)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String role;
+
     @Column(length = 7, nullable = false)
     private String gender;
 
@@ -61,9 +76,13 @@ public class User {
     @Column(nullable = true)
     private LocalDateTime updated_at;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Transaction> transactions;
+
+    @OneToMany(mappedBy = "user_refresh", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -97,6 +116,30 @@ public class User {
         this.email = email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public String getGender() {
         return gender;
     }
@@ -128,5 +171,19 @@ public class User {
     public void setTransaction(List<Transaction> transactions) {
         this.transactions = transactions;
     }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public List<RefreshToken> getRefreshTokens() {
+        return refreshTokens;
+    }
+
+    public void setRefreshTokens(List<RefreshToken> refreshTokens) {
+        this.refreshTokens = refreshTokens;
+    }
+
+    
 
 }
