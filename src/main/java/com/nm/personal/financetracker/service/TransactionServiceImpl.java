@@ -6,16 +6,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.nm.personal.financetracker.model.Billing;
 import com.nm.personal.financetracker.model.Transaction;
+import com.nm.personal.financetracker.repository.BillingRepository;
 import com.nm.personal.financetracker.repository.TransactionRepository;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final BillingRepository billingRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, BillingRepository billingRepository) {
         this.transactionRepository = transactionRepository;
+        this.billingRepository = billingRepository;
     }
 
     @Override
@@ -36,6 +40,20 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public ResponseEntity<?> saveTransaction(Transaction transaction) {
+
+        if (transaction.getCategory().getId().equals(Long.valueOf(1))) {
+            Billing billing = new Billing();
+
+            billing.setTransaction(transaction);
+            billing.setCreated_at(LocalDateTime.now());
+
+            transactionRepository.save(transaction);
+            billingRepository.save(billing);
+
+            return new ResponseEntity<>(billingRepository.findById(billing.getId()), HttpStatus.OK);
+        }
+
+
         return new ResponseEntity<>(transactionRepository.save(transaction), HttpStatus.CREATED);
     }
 
