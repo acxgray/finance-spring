@@ -1,10 +1,10 @@
 package com.nm.personal.financetracker.service;
 
-import java.util.UUID;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 
-import com.nm.personal.financetracker.dto.AuthenticationResponseDto;
+import com.nm.personal.financetracker.model.RefreshToken;
 import com.nm.personal.financetracker.model.User;
 
 public interface AuthService {
@@ -13,7 +13,11 @@ public interface AuthService {
 
     ResponseEntity<?> register(User user);
 
-    AuthenticationResponseDto refreshToken(UUID refreshToken);
+    RefreshToken createRefreshToken(Long userId);
 
-    void revokeRefreshToken(UUID refreshToken);
+    boolean isTokenExpired(RefreshToken token);
+
+    ResponseEntity<?> refreshToken(Map<String, String> payload);
+
+    ResponseEntity<?> logout(Map<String, String> payload);
 }

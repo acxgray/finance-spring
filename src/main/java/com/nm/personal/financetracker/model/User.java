@@ -1,7 +1,6 @@
 package com.nm.personal.financetracker.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -80,9 +80,9 @@ public class User {
     @JsonIgnore
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "user_refresh", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user_refresh", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<RefreshToken> refreshTokens = new ArrayList<>();
+    private RefreshToken refreshTokens;
 
     public Long getId() {
         return id;
@@ -176,11 +176,11 @@ public class User {
         this.transactions = transactions;
     }
 
-    public List<RefreshToken> getRefreshTokens() {
+    public RefreshToken getRefreshTokens() {
         return refreshTokens;
     }
 
-    public void setRefreshTokens(List<RefreshToken> refreshTokens) {
+    public void setRefreshTokens(RefreshToken refreshTokens) {
         this.refreshTokens = refreshTokens;
     }
 

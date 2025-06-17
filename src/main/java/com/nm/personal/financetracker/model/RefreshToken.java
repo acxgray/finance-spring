@@ -1,7 +1,6 @@
 package com.nm.personal.financetracker.model;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 
@@ -11,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,12 +18,15 @@ import jakarta.persistence.Table;
 public class RefreshToken {
     
     @Id
-    @GeneratedValue(strategy=GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user_refresh;
+
+    @Column(nullable = false, unique = true)
+    private String token;
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
@@ -33,11 +35,11 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiresAt;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,6 +49,14 @@ public class RefreshToken {
 
     public void setUser_refresh(User user_refresh) {
         this.user_refresh = user_refresh;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Instant getCreatedAt() {
@@ -64,6 +74,7 @@ public class RefreshToken {
     public void setExpiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
     }
+
 
     
     
