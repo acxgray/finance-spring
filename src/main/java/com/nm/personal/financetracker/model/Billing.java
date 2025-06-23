@@ -22,14 +22,10 @@ public class Billing {
     public Billing() {
     }
 
-    
-
     public Billing(Transaction transaction, LocalDateTime created_at) {
         this.transaction = transaction;
         this.created_at = created_at;
     }
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
