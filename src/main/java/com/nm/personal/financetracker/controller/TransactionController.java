@@ -2,6 +2,7 @@ package com.nm.personal.financetracker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import com.nm.personal.financetracker.service.TransactionService;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TransactionController {
     
     @Autowired
@@ -23,7 +25,7 @@ public class TransactionController {
 
     @GetMapping
     public ResponseEntity<?> getAllTransactions() {
-        return transactionService.getAllTransactions();
+        return transactionService.getAllTransactionsV2();
     }
 
     @GetMapping("/{id}")
