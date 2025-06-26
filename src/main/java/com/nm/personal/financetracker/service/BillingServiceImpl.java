@@ -1,13 +1,17 @@
 package com.nm.personal.financetracker.service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.nm.personal.financetracker.dto.BillingDto;
 import com.nm.personal.financetracker.model.Billing;
 import com.nm.personal.financetracker.repository.BillingRepository;
+import com.nm.personal.financetracker.utils.EntityDtoMapper;
 
 @Service
 public class BillingServiceImpl implements BillingService {
@@ -20,7 +24,8 @@ public class BillingServiceImpl implements BillingService {
 
     @Override
     public ResponseEntity<?> getAllBilling() {
-        return new ResponseEntity<>(billingRepository.findAll(), HttpStatus.OK);
+        List<BillingDto> bills = billingRepository.findAll().stream().map(EntityDtoMapper::BillingtoDto).collect(Collectors.toList());
+        return new ResponseEntity<>(bills, HttpStatus.OK);
     }
 
     @Override
