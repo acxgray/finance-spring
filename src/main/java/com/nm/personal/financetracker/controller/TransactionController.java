@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nm.personal.financetracker.dto.TransactionDto;
 import com.nm.personal.financetracker.model.Transaction;
 import com.nm.personal.financetracker.service.TransactionService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -34,7 +37,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveTransaction(@RequestBody Transaction transaction) {
+    public ResponseEntity<?> saveTransaction(@RequestBody @Valid TransactionDto transaction) {
         return transactionService.saveTransaction(transaction);
     }
 

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.nm.personal.financetracker.dto.CategoryResponseDto;
+import com.nm.personal.financetracker.dto.CategoryDto;
 import com.nm.personal.financetracker.model.Category;
 import com.nm.personal.financetracker.repository.CategoryRepository;
 
@@ -22,13 +22,13 @@ public class CategoryServiceImpl implements CategoryService {
     
     @Override
     public ResponseEntity<?> getAllCategories() {
-        List<CategoryResponseDto> categories = categoryRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+        List<CategoryDto> categories = categoryRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
 
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
-    private CategoryResponseDto toDto(Category category) {
-        CategoryResponseDto dto = new CategoryResponseDto();
+    private CategoryDto toDto(Category category) {
+        CategoryDto dto = new CategoryDto();
         dto.setId(category.getId());
         dto.setTitle(category.getTitle());
         dto.setNote(category.getNote());
