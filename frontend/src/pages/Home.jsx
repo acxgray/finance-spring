@@ -1,72 +1,46 @@
 import { Card, Col, Container, Placeholder, Row, Table } from "react-bootstrap";
 import Header from "../components/Header";
-
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-} from "chart.js";
-import { Pie, Line } from "react-chartjs-2";
-
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement
-);
-
-export const pieData = {
-  labels: ["Income", "Expenses"],
-  datasets: [
-    {
-      label: "Total Amount (PHP)",
-      data: [14000, 35000],
-      backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)"],
-      borderColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)"],
-      borderWidth: 0,
-    },
-  ],
-};
-
-export const lineOptions = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "bottom",
-    },
-    title: {
-      display: true,
-      text: "Transactions",
-    },
-  },
-};
-
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
-export const lineData = {
-  labels,
-  datasets: [
-    {
-      label: "No of Transactions",
-      data: [250, 17, 1, 6, 7, 8, 10],
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ],
-};
+import { useState, useEffect } from "react";
+import { axiosInstance } from "../utils/AxiosInstance";
+import { getTransactions } from "../utils/FetchFormData";
+import { BarChart, PieChart } from "@mui/x-charts";
 
 const Home = () => {
-  // Parts:
-  // Pie Graph: Total Expense/Income
-  // Bar: Expenses Income
+  const [transactionData, setTransactionData] = useState({
+    income: 0,
+    expense: 0,
+    total: [],
+  });
+
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    async function getData() {
+      const response = await axiosInstance.get(
+        "/api/v1/transactions/dashboard?user=1"
+      );
+
+      if (response) {
+        setTransactionData({
+          income: response.data.total_transaction_income,
+          expense: response.data.total_transaction_expenses,
+          total: response.data.total_transactions,
+        });
+      }
+    }
+
+    async function getAllTransactions() {
+      setTransactions(await getTransactions());
+    }
+    getData();
+    getAllTransactions();
+  }, []);
+
+  // format amount
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "PHP",
+  });
 
   return (
     <>
@@ -76,14 +50,54 @@ const Home = () => {
           <Col lg="3">
             <Card>
               <Card.Body>
-                <Pie data={pieData} />
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        {
+                          id: 0,
+                          value:
+                            transactionData.income != 0
+                              ? transactionData.income
+                              : 0,
+                          label: "Income",
+                          color: "#16C47F",
+                        },
+                        {
+                          id: 1,
+                          value:
+                            transactionData.expense != 0
+                              ? transactionData.expense
+                              : 0,
+                          label: "Expenses",
+                          color: "#F93827",
+                        },
+                      ],
+                      highlightScope: { fade: "global", highlight: "item" },
+                      faded: {
+                        innerRadius: 30,
+                        additionalRadius: -30,
+                        color: "gray",
+                      },
+                      paddingAngle: 5,
+                      innerRadius: 60,
+                      outerRadius: 80,
+                    },
+                  ]}
+                  width={200}
+                  height={200}
+                />
               </Card.Body>
             </Card>
           </Col>
           <Col lg="4">
             <Card>
               <Card.Body>
-                <Line options={lineOptions} data={lineData} />
+                <BarChart
+                  series={[{ data: transactionData.total.map((total) => total.total) }]}
+                  height={290}
+                  xAxis={[{ data: transactionData.total.map((total) => total.month), label: "Transactions Per Month", width: 60 }]}
+                />
               </Card.Body>
             </Card>
           </Col>
@@ -93,7 +107,14 @@ const Home = () => {
                 <Card.Title>Transactions</Card.Title>
                 <Row className="mt-4">
                   <Col lg="12">
-                    <Table variant="sm" striped hover bordered responsive width="100%">
+                    <Table
+                      variant="sm"
+                      striped
+                      hover
+                      bordered
+                      responsive
+                      width="100%"
+                    >
                       <thead>
                         <tr>
                           <th>Date</th>
@@ -102,11 +123,20 @@ const Home = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td className="small">2025-06-20 11:00 PM</td>
-                          <td className="small">GCASH</td>
-                          <td className="small">1500.00</td>
-                        </tr>
+                        {Array.isArray(transactions) &&
+                          transactions.map((transaction) => (
+                            <tr key={transaction.id}>
+                              <td>
+                                {new Intl.DateTimeFormat("en-PH", {
+                                  dateStyle: "full",
+                                  timeStyle: "short",
+                                  timeZone: "Asia/Manila",
+                                }).format(transaction.created_date)}
+                              </td>
+                              <td>{transaction.note}</td>
+                              <td>{formatter.format(transaction.amount)}</td>
+                            </tr>
+                          ))}
                       </tbody>
                     </Table>
                   </Col>
