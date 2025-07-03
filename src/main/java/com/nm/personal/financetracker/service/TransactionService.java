@@ -18,5 +18,7 @@ public interface TransactionService {
     ResponseEntity<?> updateTransaction(Long id, Transaction transaction);
 
     ResponseEntity<?> deleteTransaction(Long id);
+
+    ResponseEntity<?> fetchDashboard(Long id);
     
 }

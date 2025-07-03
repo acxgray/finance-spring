@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nm.personal.financetracker.dto.TransactionDto;
@@ -32,7 +33,7 @@ public class TransactionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTransactionById(Long id) {
+    public ResponseEntity<?> getTransactionById(@PathVariable Long id) {
         return transactionService.getTransactionById(id);
     }
 
@@ -51,4 +52,8 @@ public class TransactionController {
         return transactionService.deleteTransaction(id);
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> fetchDashboard(@RequestParam(name = "user", required = true) Long id) {
+        return transactionService.fetchDashboard(id);
+    }
 }

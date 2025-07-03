@@ -1,7 +1,9 @@
 package com.nm.personal.financetracker.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -57,7 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
             return new ResponseEntity<>("Transaction not found", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(transactionDetail, HttpStatus.OK);
+        return new ResponseEntity<>(EntityDtoMapper.toDto(transactionDetail), HttpStatus.OK);
     }
 
     @Override
@@ -118,6 +120,21 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.deleteById(id);
 
         return new ResponseEntity<>("Transaction has been removed", HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> fetchDashboard(Long id) {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("total_transaction_amount", transactionRepository.getTotalTransactionByUser(id));
+        stats.put("total_transaction_income", transactionRepository.getTotalIncomeByUser(id));
+        stats.put("total_transaction_expenses", transactionRepository.getTotalExpensesByUser(id));
+
+        // No of Transactions per month
+        // Map<String, Object> noOfTransactions = new HashMap<>();
+        stats.put("total_transactions", transactionRepository.getTotalTransactionsByUserAndByDate(id));
+        
+
+        return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 
     public TransactionDto toDto(Transaction transaction) {
